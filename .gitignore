@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+bin/
+obj/
+/EntitySystem.Example/Server/Database.db
+/Core.Emulator/Properties
