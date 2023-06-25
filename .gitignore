@@ -5,5 +5,4 @@
 /.vs
 bin/
 obj/
-/EntitySystem.Example/Server/Database.db
 /Core.Emulator/Properties
