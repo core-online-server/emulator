@@ -59,9 +59,9 @@ namespace Core.Emulator.Domain.Members.Methods
             return $"{Interface.ContainingNamespace}.{Interface.Name}<{string.Join(", ", types)}>";
         }
 
-        public IEnumerable<Call> ResolveCalls(IEnumerable<(string fullType, string type, string name)> parameters)
+        public IEnumerable<Call> ResolveCalls(IEnumerable<(string @ref, string fullType, string type, string name)> parameters)
         {
-            yield return new Call(Priority ?? 0.0, Name.Substring(2), $"{ResolveHandler()}.{Name}", new[] { (Object.Name, Object.Name, "this") }.Concat(parameters.Skip(1)), !Original.ReturnsVoid);
+            yield return new Call(Priority ?? 0.0, Name.Substring(2), $"{ResolveHandler()}.{Name}", new[] { (string.Empty, Object.Name, Object.Name, "this") }.Concat(parameters.Skip(1)), !Original.ReturnsVoid);
 
             foreach (var call in ResolveAdditionalCalls()) yield return call;
         }

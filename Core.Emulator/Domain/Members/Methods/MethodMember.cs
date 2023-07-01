@@ -109,7 +109,7 @@ namespace Core.Emulator.Domain.Members.Methods
                 return Members.Any(m => m.Original.IsAbstract);
             }
 
-            private IEnumerable<(string fullType, string type, string name)> ResolveParameters()
+            private IEnumerable<(string @ref, string fullType, string type, string name)> ResolveParameters()
             {
                 var declaration = Members
                     .Where(m => m.Original.IsAbstract)
@@ -131,25 +131,25 @@ namespace Core.Emulator.Domain.Members.Methods
                     .Where(s => s != default);
             }
 
-            protected IEnumerable<(string fullType, string type, string name)> ResolveParameters(T member)
+            protected IEnumerable<(string @ref, string fullType, string type, string name)> ResolveParameters(T member)
             {
                 return member.Original.Parameters
                     .Select(p => ResolveParameterSplit(ResolveParameter(member.Interface, p)))
                     .Where(s => s != default);
             }
 
-            private static (string fullType, string type, string name) ResolveParameterSplit(string parameters)
+            private static (string @ref, string fullType, string type, string name) ResolveParameterSplit(string parameters)
             {
                 var split = parameters.Split(' ');
 
-                return split.Length != 3 ? default : (split[0], split[1], split[2]);
+                return split.Length != 4 ? default : (split[0], split[1], split[2], split[3]);
             }
 
             private string ResolveParameter(ISymbol @interface, IParameterSymbol parameter)
             {
                 var dictionary = Object.Dictionary[@interface];
 
-                return dictionary.TryGetValue(parameter.Type, out var name) ? $"{name} {name} {parameter.Name}" : $"{parameter.Type} {parameter.Type.Name} {parameter.Name}";
+                return dictionary.TryGetValue(parameter.Type, out var name) ? $"{(parameter.RefKind == RefKind.Ref ? "ref" : string.Empty)} {name} {name} {parameter.Name}" : $"{(parameter.RefKind == RefKind.Ref ? "ref" : string.Empty)} {parameter.Type} {parameter.Type.Name} {parameter.Name}";
             }
         }
 
@@ -163,7 +163,7 @@ namespace Core.Emulator.Domain.Members.Methods
 
             public string ReturnTypeName { get; }
 
-            public ImmutableArray<(string fullType, string type, string name)> Parameters { get; set; }
+            public ImmutableArray<(string @ref, string fullType, string type, string name)> Parameters { get; set; }
 
             protected MethodMerge(Object o, string name, string returnType, string returnTypeName)
             {

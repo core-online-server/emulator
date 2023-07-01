@@ -158,7 +158,7 @@ namespace Launcher.Domain;";
     }}"))}";
         }
 
-        protected virtual string GetMethodBodyCode(MethodMember.MethodMerge method, ImmutableHashSet<(string fullType, string type, string name)> parameters)
+        protected virtual string GetMethodBodyCode(MethodMember.MethodMerge method, ImmutableHashSet<(string @ref, string fullType, string type, string name)> parameters)
         {
             if (!Calls.TryGetValue(method.Name, out var calls)) return string.Empty;
 
@@ -167,8 +167,9 @@ namespace Launcher.Domain;";
                 .SelectMany(c => c.Parameters.Skip(1).Where(p => c.Also.parameter != p.name))
                 .Where(p => !parameters.Contains(p))
                 .Distinct()
-                .Select(p => $@"
-        {p.type} {p.name} = Save.{p.type}Store.Lease();");
+                .Select(p => string.IsNullOrEmpty(p.@ref) ? $@"
+        {p.type} {p.name} = Save.{p.type}Store.Lease();" : $@"
+        {p.type} {p.name} = default;");
 
             return string.Join(@"
 ", leasing.Concat(GetSwitchCode(calls.Select(c => (c, c.Case)))));
